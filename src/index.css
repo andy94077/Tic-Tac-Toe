@@ -17,7 +17,7 @@ ol, ul {
 	margin-bottom: 10px;
 }
 
-.square {
+.square, .hidden-square {
 	background: #fff;
 	border: 1px solid #999;
 	float: left;
@@ -32,8 +32,18 @@ ol, ul {
 	width: 34px;
 }
 
+.hidden-square{
+	border: none;
+	font-size: 20px;
+	font-weight: normal;
+}
+
 .square:focus {
 	outline: none;
+}
+
+.button-bold{
+	font-weight: bold;
 }
 
 .kbd-navigation .square:focus {
