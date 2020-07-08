@@ -10,20 +10,35 @@ function Square(props) {
 	);
 }
 
-function playerWin(squares) {
-	for (let i = 0; i < 9; i += 3) {
-		if (squares[i] && squares[i] === squares[i + 1] && squares[i] === squares[i + 2])
+function IndexButton(props) {
+	return <button className="hidden-square">{props.index}</button>;
+}
+
+function playerWin(squares, length) {
+	//rows
+	for (let i = 0; i < length ** 2; i += length) {
+		if (squares[i] && squares.slice(i, i + length).every(val => (squares[i] === val)))
 			return true;
 	}
 
-	for (let i = 0; i < 3; i++) {
-		if (squares[i] && squares[i] === squares[i + 3] && squares[i] === squares[i + 6])
+	//columns
+	for (let i = 0; i < length; i++) {
+		if (squares[i] && squares.filter((_, index) => (index % length === i)).every(val => (squares[i] === val)))
 			return true;
 	}
 
+	// backslash and slash
 	if (
-		(squares[0] && squares[0] === squares[4] && squares[0] === squares[8]) ||
-		(squares[2] && squares[2] === squares[4] && squares[2] === squares[6])
+		(squares[0] &&
+			squares.filter(
+				(_, index) => (index % length === Math.floor(index / length))
+			).every(val => (squares[0] === val))
+		) ||
+		(squares[length - 1] &&
+			squares.filter(
+				(_, index) => (length - 1 - index % length === Math.floor(index / length))
+			).every(val => (squares[length - 1] === val))
+		)
 	)
 		return true;
 
@@ -34,27 +49,32 @@ class Board extends React.Component {
 	renderSquare(i) {
 		return (
 			<Square
+				key={i}
 				value={this.props.squares[i]}
 				onClick={() => this.props.onClick(i)}
 			/>
 		);
 	}
 
+	renderRow(row) {
+		const rowSquare = [...Array(this.props.length)].map((_, index) => this.renderSquare(row * this.props.length + index));
+		return (
+			<div className="board-row" key={row}>
+				<IndexButton index={row} /> {rowSquare}
+			</div>
+		);
+	}
+
 	render() {
+		const rowIndex = [...Array(this.props.length)].map((_, index) => <IndexButton key={index} index={index} />);
+		const squares = [...Array(this.props.length)].map((_, index) => this.renderRow(index));
 		return (
 			<div>
 				<div className="board-row">
-				<button class="hidden-square"/> <button class="hidden-square">0</button> <button class="hidden-square">1</button> <button class="hidden-square">2</button>
+					<IndexButton /> {rowIndex}
 				</div>
-				<div className="board-row">
-					<button class="hidden-square">0</button> {this.renderSquare(0)} {this.renderSquare(1)} {this.renderSquare(2)}
-				</div>
-				<div className="board-row">
-					<button class="hidden-square">1</button>{this.renderSquare(3)} {this.renderSquare(4)} {this.renderSquare(5)}
-				</div>
-				<div className="board-row">
-					<button class="hidden-square">2</button>{this.renderSquare(6)} {this.renderSquare(7)} {this.renderSquare(8)}
-				</div>
+
+				{squares}
 			</div>
 		);
 	}
@@ -64,20 +84,20 @@ class Game extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			history: [{ squares: Array(9).fill(null), position: null }],
+			history: [{ squares: Array(this.props.length ** 2).fill(null), position: null }],
 			steps: 0
 		};
 	}
 
 	handleClick(i) {
 		let squares = this.state.history[this.state.steps].squares.slice();
-		if (squares[i] !== null || playerWin(squares)) return;
+		if (squares[i] !== null || playerWin(squares, this.props.length)) return;
 
 		squares[i] = this.state.steps % 2 === 0 ? 'X' : 'O';
 		this.setState(state => ({
 			history: state.history.slice(0, state.steps + 1).concat([{
 				squares: squares,
-				position: [Math.floor(i / 3), i % 3]
+				position: [Math.floor(i / this.props.length), i % this.props.length]
 			}]),
 			steps: state.steps + 1
 		}));
@@ -100,7 +120,7 @@ class Game extends React.Component {
 		const log = this.state.history[this.state.steps];
 		const player = this.state.steps % 2 === 0 ? 'X' : 'O';
 		let status;
-		if (playerWin(log.squares))
+		if (playerWin(log.squares, this.props.length))
 			status = `Winner: ${player === 'O' ? 'X' : 'O'}`;
 		else
 			status = `Next player: ${player}`;
@@ -113,6 +133,7 @@ class Game extends React.Component {
 					<Board
 						squares={log.squares}
 						onClick={(i) => this.handleClick(i)}
+						length={this.props.length}
 					/>
 				</div>
 				<div className="game-info">
@@ -126,4 +147,4 @@ class Game extends React.Component {
 
 // ========================================
 
-ReactDOM.render(<Game />, document.getElementById("root"));
+ReactDOM.render(<Game length={5} />, document.getElementById("root"));
