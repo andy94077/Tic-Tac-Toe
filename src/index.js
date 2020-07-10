@@ -139,9 +139,10 @@ class Game extends React.Component {
 		const log = this.state.history[this.state.steps];
 		const player = this.state.steps % 2 === 0 ? 'X' : 'O';
 		let status, winningLine = playerWin(log.squares, this.props.length);
-		if (winningLine !== false) {
+		if (winningLine !== false)
 			status = `Winner: ${player === 'O' ? 'X' : 'O'}`;
-		}
+		else if (this.state.steps === this.props.length ** 2)
+			status = 'Draw';
 		else
 			status = `Next player: ${player}`;
 
@@ -175,4 +176,4 @@ class Game extends React.Component {
 
 // ========================================
 
-ReactDOM.render(<Game length={3} />, document.getElementById("root"));
+ReactDOM.render(<Game length={5} />, document.getElementById("root"));
