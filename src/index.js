@@ -7,7 +7,7 @@ function* range(start, end = null, step = 1) {
 		end = start;
 		start = 0;
 	}
-	for (let i = start; i < end; i+=step)
+	for (let i = start; i < end; i += step)
 		yield i;
 }
 
@@ -33,7 +33,7 @@ function playerWin(squares, length) {
 	// columns
 	for (let i = 0; i < length; i++) {
 		if (squares[i] && squares.filter((_, index) => (index % length === i)).every(val => (squares[i] === val)))
-			return Array.from(range(i, length**2, length));
+			return Array.from(range(i, length ** 2, length));
 	}
 
 	// backslash
@@ -46,7 +46,7 @@ function playerWin(squares, length) {
 		return Array.from(range(length ** 2)).filter(
 			(i) => (i % length === Math.floor(i / length))
 		);
-	
+
 	// slash
 	if (
 		squares[length - 1] &&
@@ -113,7 +113,7 @@ class Game extends React.Component {
 		if (squares[i] !== null || winnerLine !== false) return winnerLine;
 
 		squares[i] = (this.state.steps % 2 === 0) ? 'X' : 'O';
-		this.setState(({history, steps}) => ({
+		this.setState(({ history, steps }) => ({
 			history: history.slice(0, steps + 1).concat([{
 				squares: squares,
 				position: [Math.floor(i / this.props.length), i % this.props.length]
@@ -139,9 +139,10 @@ class Game extends React.Component {
 		const log = this.state.history[this.state.steps];
 		const player = this.state.steps % 2 === 0 ? 'X' : 'O';
 		let status, winningLine = playerWin(log.squares, this.props.length);
-		if (winningLine !== false) {
+		if (winningLine !== false)
 			status = `Winner: ${player === 'O' ? 'X' : 'O'}`;
-		}
+		else if (this.state.steps === this.props.length ** 2)
+			status = 'Draw';
 		else
 			status = `Next player: ${player}`;
 
@@ -162,9 +163,9 @@ class Game extends React.Component {
 				<div className="game-info">
 					<div>{status}</div>
 					<div>
-					<button onClick={() => this.setState(({ascending}) => ({ ascending: !(ascending) }))}>
-						{this.state.ascending ? 'descending' : 'ascending'}
-					</button>
+						<button onClick={() => this.setState(({ ascending }) => ({ ascending: !(ascending) }))}>
+							{this.state.ascending ? 'descending' : 'ascending'}
+						</button>
 					</div>
 					<ol>{moves}</ol>
 				</div>
@@ -175,4 +176,4 @@ class Game extends React.Component {
 
 // ========================================
 
-ReactDOM.render(<Game length={3} />, document.getElementById("root"));
+ReactDOM.render(<Game length={5} />, document.getElementById("root"));
