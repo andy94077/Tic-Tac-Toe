@@ -38,6 +38,9 @@ ol, ul {
 	font-weight: normal;
 }
 
+.winning-square{
+	color: crimson;
+}
 .square:focus {
 	outline: none;
 }
