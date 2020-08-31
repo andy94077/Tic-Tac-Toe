@@ -107,7 +107,7 @@ class Game extends React.Component {
 		};
 	}
 
-	handleClick(i) {
+	handleClick = (i) => {
 		let squares = this.state.history[this.state.steps].squares.slice();
 		let winnerLine = playerWin(squares, this.props.length);
 		if (squares[i] !== null || winnerLine !== false) return winnerLine;
@@ -155,7 +155,7 @@ class Game extends React.Component {
 				<div className="game-board">
 					<Board
 						squares={log.squares}
-						onClick={(i) => this.handleClick(i)}
+						onClick={this.handleClick}
 						length={this.props.length}
 						winningLine={winningLine}
 					/>
@@ -176,4 +176,4 @@ class Game extends React.Component {
 
 // ========================================
 
-ReactDOM.render(<Game length={5} />, document.getElementById("root"));
+ReactDOM.render(<Game length={3} />, document.getElementById("root"));
